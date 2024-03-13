@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./starRating";
+import { useKey } from "./useKey";
 
 ////////////////////////////
 const tempWatchedData = [
@@ -160,19 +161,14 @@ function Logo() {
 function Search({ query, setQuery }) {
   const InputElement = useRef(null);
 
-  useEffect(() => {
-    function callBack(e) {
-      if (e.code === "Enter") {
-        console.log('hello')
-        if (document.activeElement === InputElement.current) return;
-        InputElement.current.focus();
-        setQuery("");
-      }
-    }
-    document.addEventListener("keydown", callBack);
 
-    return () => document.removeEventListener('keydown', callBack)
-  }, [setQuery]);
+  useKey("Enter", function(){
+    if (document.activeElement === InputElement.current) return;
+    InputElement.current.focus();
+    setQuery("");
+  })
+
+
   return (
     <input
       className="search"
@@ -430,20 +426,7 @@ function MovieDetail({ selectedID, onClick, addBthHnadler, watchedList }) {
     [title]
   );
 
-  useEffect(function () {
-    function callBack(e) {
-      console.log(e);
-      if (e.code !== "Escape") return;
-      onClick();
-      console.log("close");
-    }
-
-    document.addEventListener("keydown", callBack);
-
-    return function () {
-      document.removeEventListener("keydown", callBack);
-    };
-  });
+    useKey('Escape', onClick)
   return (
     <div className="details">
       {!isLoding && !errorMessage && (
